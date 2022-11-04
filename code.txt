@@ -1,0 +1,87 @@
+#include <Servo.h>
+
+Servo servo;
+int pos = 0;
+int led = 3;
+int but = 2;
+int sens = 4;
+int val = 0;
+int state = LOW;
+int Timer1;
+int Timer2;
+
+void leds_on(){
+
+  digitalWrite(led, HIGH);
+  delay(300);
+  digitalWrite(7, HIGH);
+  delay(300);
+  digitalWrite(6, HIGH);
+  delay(300);
+  digitalWrite(5, HIGH);
+}
+
+void leds_off(){
+
+  digitalWrite(5, LOW);
+  delay(300);
+  digitalWrite(6, LOW);
+  delay(300);
+  digitalWrite(7, LOW);
+  delay(300);
+  digitalWrite(led, LOW);
+}
+
+void setup()
+{
+  servo.attach(9,450,2550);
+  servo.write(0);
+  pinMode(led, OUTPUT);
+  pinMode(but, INPUT);
+  pinMode(sens, INPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop()
+{
+
+  //if button is pressed 
+  if(digitalRead(but) == 0)
+  {
+    leds_on();
+  	//digitalWrite(led, HIGH);
+    //sets the angle of the sevro to 90 deg
+    for (pos = 0; pos <= 90; pos++) 
+    {
+    	servo.write(pos);
+    	delay(15);
+  	}
+    
+    //first time counter
+    Timer1 = millis();
+    
+    //waiting for sensor response 
+    do
+    {
+      Timer2 = millis(); // second Time counter
+      val = digitalRead(sens);
+    }while(val != HIGH && (Timer2 - Timer1) < 10000); 
+    
+    val = 0;
+    delay(1000);
+    //sets the angle of servo to 0 deg
+    for (pos = 90; pos >= 0; pos -= 1) 
+    {
+    	servo.write(pos);
+    	delay(15);
+  	}
+    delay(1000);
+    //digitalWrite(led, LOW);
+    leds_off();
+    
+  }
+  
+}
